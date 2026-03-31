@@ -41,46 +41,6 @@
       padding: 18px 0 32px;
     }
 
-    .hero {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(145deg, #ffffff, #fff3da);
-      border-radius: 30px;
-      padding: 24px 22px;
-      box-shadow: var(--shadow);
-      border: 3px solid #fff;
-    }
-
-    .hero::after {
-      content: "";
-      position: absolute;
-      right: -24px;
-      top: -28px;
-      width: 150px;
-      height: 150px;
-      background: radial-gradient(circle, rgba(255, 214, 90, 0.8), rgba(255, 214, 90, 0));
-    }
-
-    .hero h1 {
-      margin: 0 0 8px;
-      font-size: clamp(30px, 4vw, 48px);
-      line-height: 1.1;
-    }
-
-    .hero p {
-      margin: 0;
-      max-width: 760px;
-      font-size: 17px;
-      line-height: 1.6;
-    }
-
-    .hero-actions {
-      margin-top: 16px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
     .link-button {
       display: inline-flex;
       align-items: center;
@@ -100,7 +60,6 @@
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
       gap: 18px;
-      margin-top: 18px;
     }
 
     .panel {
@@ -344,6 +303,12 @@
       height: 44px;
     }
 
+    .footer-actions {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+    }
+
     @media (max-width: 900px) {
       .layout {
         grid-template-columns: 1fr;
@@ -355,16 +320,8 @@
     }
   </style>
 </head>
-<body>
+  <body>
   <main class="app">
-    <section class="hero">
-      <h1 id="heroTitle">Suya's Happy English</h1>
-      <p id="heroSubtitle">点句子听老师读，点单词学发音，再按录音按钮跟读。这个版本额外做了 Safari 兼容处理。</p>
-      <div class="hero-actions">
-        <a class="link-button" href="./stats.html">查看统计</a>
-      </div>
-    </section>
-
     <section class="layout">
       <div class="panel stage">
         <div class="topbar">
@@ -421,6 +378,10 @@
         </div>
       </aside>
     </section>
+
+    <div class="footer-actions">
+      <a class="link-button" href="./stats.html">查看统计</a>
+    </div>
   </main>
 
   <script>
@@ -475,8 +436,6 @@
 
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-    const heroTitle = document.getElementById("heroTitle");
-    const heroSubtitle = document.getElementById("heroSubtitle");
     const lineLabel = document.getElementById("lineLabel");
     const sceneImage = document.getElementById("sceneImage");
     const sentence = document.getElementById("sentence");
@@ -500,8 +459,6 @@
     }
 
     function renderHeader() {
-      heroTitle.textContent = APP_CONFIG.title;
-      heroSubtitle.textContent = APP_CONFIG.subtitle;
       document.title = APP_CONFIG.title;
     }
 

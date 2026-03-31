@@ -122,6 +122,89 @@
       gap: 12px;
     }
 
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 4px;
+      margin-bottom: 14px;
+    }
+
+    .calendar-title {
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .calendar-nav button {
+      min-height: 42px;
+      padding: 8px 14px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 800;
+      background: #fff3da;
+      box-shadow: 0 8px 18px rgba(81, 95, 135, 0.1);
+    }
+
+    .calendar-weekdays,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .calendar-weekdays {
+      margin-bottom: 8px;
+    }
+
+    .weekday {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: #6a7588;
+    }
+
+    .calendar-day {
+      min-height: 86px;
+      border-radius: 18px;
+      padding: 10px 8px;
+      background: #fff9ef;
+      border: 2px solid #ffe5bf;
+      display: grid;
+      align-content: space-between;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .calendar-day.muted {
+      opacity: 0.35;
+    }
+
+    .calendar-day.today {
+      border-color: #ffb777;
+      background: #fff3dd;
+    }
+
+    .day-number {
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    .day-stars {
+      font-size: 13px;
+      font-weight: 800;
+      color: #d27b16;
+      min-height: 18px;
+    }
+
     .tool-row {
       display: flex;
       flex-wrap: wrap;
@@ -221,6 +304,28 @@
       </section>
 
       <section class="panel">
+        <h2>日历统计</h2>
+        <div class="calendar-header">
+          <div class="calendar-title" id="calendarTitle">2026-03</div>
+          <div class="calendar-nav">
+            <button id="prevMonthBtn" type="button">上个月</button>
+            <button id="currentMonthBtn" type="button">本月</button>
+            <button id="nextMonthBtn" type="button">下个月</button>
+          </div>
+        </div>
+        <div class="calendar-weekdays">
+          <div class="weekday">日</div>
+          <div class="weekday">一</div>
+          <div class="weekday">二</div>
+          <div class="weekday">三</div>
+          <div class="weekday">四</div>
+          <div class="weekday">五</div>
+          <div class="weekday">六</div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </section>
+
+      <section class="panel">
         <h2>按日期统计</h2>
         <div class="daily-list" id="dailyList"></div>
       </section>
@@ -240,11 +345,15 @@
       currentIndex: 0,
       dailyStars: {}
     };
+    let calendarCursor = new Date();
+    calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth(), 1);
 
     const totalStarsEl = document.getElementById("totalStars");
     const todayStarsEl = document.getElementById("todayStars");
     const bestScoreEl = document.getElementById("bestScore");
     const dailyListEl = document.getElementById("dailyList");
+    const calendarTitleEl = document.getElementById("calendarTitle");
+    const calendarGridEl = document.getElementById("calendarGrid");
     const dateInputEl = document.getElementById("dateInput");
     const statusTextEl = document.getElementById("statusText");
 
@@ -258,6 +367,45 @@
 
     function formatDateLabel(dateKey) {
       return `${dateKey.slice(0, 4)}-${dateKey.slice(4, 6)}-${dateKey.slice(6, 8)}`;
+    }
+
+    function formatDateKeyFromDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}${month}${day}`;
+    }
+
+    function renderCalendar() {
+      const viewYear = calendarCursor.getFullYear();
+      const viewMonth = calendarCursor.getMonth();
+      calendarTitleEl.textContent = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}`;
+
+      const firstDay = new Date(viewYear, viewMonth, 1);
+      const startWeekDay = firstDay.getDay();
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      const todayKey = getTodayKey();
+
+      calendarGridEl.innerHTML = "";
+
+      for (let i = 0; i < startWeekDay; i += 1) {
+        const emptyCell = document.createElement("div");
+        emptyCell.className = "calendar-day muted";
+        calendarGridEl.append(emptyCell);
+      }
+
+      for (let day = 1; day <= daysInMonth; day += 1) {
+        const date = new Date(viewYear, viewMonth, day);
+        const dateKey = formatDateKeyFromDate(date);
+        const starCount = Number(progressState.dailyStars[dateKey]) || 0;
+        const cell = document.createElement("div");
+        cell.className = `calendar-day${dateKey === todayKey ? " today" : ""}`;
+        cell.innerHTML = `
+          <div class="day-number">${day}</div>
+          <div class="day-stars">${starCount > 0 ? `${starCount} ⭐` : ""}</div>
+        `;
+        calendarGridEl.append(cell);
+      }
     }
 
     function openDb() {
@@ -398,6 +546,8 @@
         item.innerHTML = `<div class="daily-date">${formatDateLabel(dateKey)}</div><div class="daily-stars">${value} ⭐</div>`;
         dailyListEl.append(item);
       });
+
+      renderCalendar();
     }
 
     function isValidDateKey(value) {
@@ -425,6 +575,19 @@
     }
 
     document.getElementById("clearDateBtn").addEventListener("click", clearDayStars);
+    document.getElementById("prevMonthBtn").addEventListener("click", () => {
+      calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth() - 1, 1);
+      renderCalendar();
+    });
+    document.getElementById("nextMonthBtn").addEventListener("click", () => {
+      calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth() + 1, 1);
+      renderCalendar();
+    });
+    document.getElementById("currentMonthBtn").addEventListener("click", () => {
+      const now = new Date();
+      calendarCursor = new Date(now.getFullYear(), now.getMonth(), 1);
+      renderCalendar();
+    });
 
     async function initPage() {
       await loadProgress();
