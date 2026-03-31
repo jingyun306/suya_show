@@ -10,7 +10,7 @@ use for: I am four years old.
 name: superpower.jpg
 use for: If I have a superpower,
 
-name: fly.jpg
+name: fly.png
 use for: I want to fly.
 
 name: home.jpg
