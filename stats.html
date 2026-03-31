@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suya's Stats</title>
+  <style>
+    :root {
+      --sky: #eef8ff;
+      --panel: #ffffff;
+      --ink: #304057;
+      --orange: #ff9b54;
+      --yellow: #ffd65a;
+      --pink: #ff8fb1;
+      --green: #70c98b;
+      --line: #ffd7b2;
+      --shadow: 0 18px 36px rgba(81, 95, 135, 0.16);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255, 214, 90, 0.35) 0, transparent 18%),
+        linear-gradient(180deg, var(--sky) 0%, #fffaf1 100%);
+      min-height: 100vh;
+    }
+
+    .app {
+      width: min(980px, calc(100vw - 24px));
+      margin: 0 auto;
+      padding: 20px 0 32px;
+    }
+
+    .hero, .panel {
+      background: var(--panel);
+      border-radius: 28px;
+      padding: 20px;
+      border: 3px solid #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .hero h1, .panel h2 {
+      margin: 0 0 8px;
+    }
+
+    .hero p {
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .link-button, .big-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 10px 18px;
+      border-radius: 18px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 800;
+      box-shadow: 0 8px 18px rgba(81, 95, 135, 0.12);
+    }
+
+    .link-button {
+      background: #fff3da;
+      color: var(--ink);
+      border: 2px solid #ffe3b1;
+    }
+
+    .big-button.orange { background: linear-gradient(180deg, #ffb377, var(--orange)); color: #fff; }
+    .big-button.pink { background: linear-gradient(180deg, #ffb8ce, var(--pink)); color: #fff; }
+
+    .layout {
+      display: grid;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stat-card {
+      border-radius: 22px;
+      padding: 18px;
+      color: var(--ink);
+      background: linear-gradient(180deg, #fff7dc, #fff0ba);
+      box-shadow: 0 10px 20px rgba(255, 193, 68, 0.18);
+    }
+
+    .stat-card.green { background: linear-gradient(180deg, #def8e6, #c5f0d1); }
+    .stat-card.pink { background: linear-gradient(180deg, #ffe7ef, #ffd5e3); }
+
+    .stat-label {
+      font-size: 14px;
+      opacity: 0.78;
+    }
+
+    .stat-value {
+      margin-top: 8px;
+      font-size: 36px;
+      font-weight: 900;
+    }
+
+    .tools {
+      display: grid;
+      gap: 12px;
+    }
+
+    .tool-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .tool-row input {
+      min-width: 220px;
+      min-height: 48px;
+      border-radius: 16px;
+      border: 2px solid #ffd9c0;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 16px;
+    }
+
+    .hint, .status {
+      line-height: 1.6;
+      font-size: 14px;
+      color: #5f6b7a;
+    }
+
+    .status {
+      min-height: 24px;
+      font-weight: 700;
+      color: #3f5167;
+    }
+
+    .daily-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .daily-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: #fff8ec;
+      border: 2px solid #ffe5bf;
+    }
+
+    .daily-date {
+      font-weight: 800;
+    }
+
+    .daily-stars {
+      font-weight: 900;
+      font-size: 20px;
+    }
+
+    @media (max-width: 760px) {
+      .summary {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <h1>学习统计</h1>
+      <p>这里专门看星星统计，不放在学习主页面里。可以按日期看每天收获了多少颗星星，也可以清除指定日期的数据。</p>
+      <div class="hero-actions">
+        <a class="link-button" href="./index.html">返回学习页</a>
+      </div>
+    </section>
+
+    <section class="layout">
+      <section class="summary">
+        <div class="stat-card">
+          <div class="stat-label">总星星</div>
+          <div class="stat-value" id="totalStars">0</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">今天星星</div>
+          <div class="stat-value" id="todayStars">0</div>
+        </div>
+        <div class="stat-card pink">
+          <div class="stat-label">最好分数</div>
+          <div class="stat-value" id="bestScore">0</div>
+        </div>
+      </section>
+
+      <section class="panel tools">
+        <h2>清除当天星星</h2>
+        <div class="hint">需要输入当天的年月日才会清除，例如 `20260331`。只会清掉这一天的星星记录。</div>
+        <div class="tool-row">
+          <input id="dateInput" type="text" inputmode="numeric" placeholder="输入日期，如 20260331" maxlength="8" />
+          <button id="clearDateBtn" class="big-button pink" type="button">清除这一天</button>
+        </div>
+        <div class="status" id="statusText"></div>
+      </section>
+
+      <section class="panel">
+        <h2>按日期统计</h2>
+        <div class="daily-list" id="dailyList"></div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const DB_NAME = "suya-english-game";
+    const DB_VERSION = 1;
+    const STORE_NAME = "kv";
+    const STORAGE_KEY = "suya-english-game-state";
+
+    let db = null;
+    let progressState = {
+      totalStars: 0,
+      bestScore: 0,
+      currentIndex: 0,
+      dailyStars: {}
+    };
+
+    const totalStarsEl = document.getElementById("totalStars");
+    const todayStarsEl = document.getElementById("todayStars");
+    const bestScoreEl = document.getElementById("bestScore");
+    const dailyListEl = document.getElementById("dailyList");
+    const dateInputEl = document.getElementById("dateInput");
+    const statusTextEl = document.getElementById("statusText");
+
+    function getTodayKey() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      return `${year}${month}${day}`;
+    }
+
+    function formatDateLabel(dateKey) {
+      return `${dateKey.slice(0, 4)}-${dateKey.slice(4, 6)}-${dateKey.slice(6, 8)}`;
+    }
+
+    function openDb() {
+      return new Promise((resolve, reject) => {
+        if (!("indexedDB" in window)) {
+          resolve(null);
+          return;
+        }
+
+        const request = window.indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = () => {
+          const database = request.result;
+          if (!database.objectStoreNames.contains(STORE_NAME)) {
+            database.createObjectStore(STORE_NAME);
+          }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function dbGet(key) {
+      return new Promise((resolve, reject) => {
+        if (!db) {
+          resolve(null);
+          return;
+        }
+        const tx = db.transaction(STORE_NAME, "readonly");
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.get(key);
+        request.onsuccess = () => resolve(request.result ?? null);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function dbSet(key, value) {
+      return new Promise((resolve, reject) => {
+        if (!db) {
+          resolve();
+          return;
+        }
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        const store = tx.objectStore(STORE_NAME);
+        store.put(value, key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    function loadLocalFallback() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function saveLocalFallback(state) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (error) {
+      }
+    }
+
+    async function loadProgress() {
+      let state = null;
+      try {
+        db = await openDb();
+        state = await dbGet("progress");
+      } catch (error) {
+        db = null;
+      }
+
+      if (!state) {
+        state = loadLocalFallback();
+      }
+
+      const dailyStars = state && state.dailyStars && typeof state.dailyStars === "object" ? state.dailyStars : {};
+      const totalStars = state && Number.isFinite(state.totalStars)
+        ? state.totalStars
+        : state && Number.isFinite(state.stars)
+          ? state.stars
+          : 0;
+      const bestScore = state && Number.isFinite(state.bestScore) ? state.bestScore : 0;
+      const currentIndex = state && Number.isFinite(state.currentIndex) ? state.currentIndex : 0;
+
+      progressState = { totalStars, bestScore, currentIndex, dailyStars };
+    }
+
+    async function saveProgress() {
+      const state = {
+        stars: progressState.totalStars,
+        totalStars: progressState.totalStars,
+        bestScore: progressState.bestScore,
+        currentIndex: progressState.currentIndex,
+        dailyStars: progressState.dailyStars,
+        savedAt: Date.now()
+      };
+
+      saveLocalFallback(state);
+      try {
+        if (!db) {
+          db = await openDb();
+        }
+        if (db) {
+          await dbSet("progress", state);
+        }
+      } catch (error) {
+      }
+    }
+
+    function renderStats() {
+      const todayKey = getTodayKey();
+      const todayStars = Number(progressState.dailyStars[todayKey]) || 0;
+
+      totalStarsEl.textContent = progressState.totalStars;
+      todayStarsEl.textContent = todayStars;
+      bestScoreEl.textContent = progressState.bestScore;
+
+      const sortedEntries = Object.entries(progressState.dailyStars)
+        .filter(([, value]) => Number(value) > 0)
+        .sort((a, b) => b[0].localeCompare(a[0]));
+
+      dailyListEl.innerHTML = "";
+
+      if (!sortedEntries.length) {
+        const empty = document.createElement("div");
+        empty.className = "daily-item";
+        empty.innerHTML = "<div class='daily-date'>还没有星星记录</div><div class='daily-stars'>0</div>";
+        dailyListEl.append(empty);
+        return;
+      }
+
+      sortedEntries.forEach(([dateKey, value]) => {
+        const item = document.createElement("div");
+        item.className = "daily-item";
+        item.innerHTML = `<div class="daily-date">${formatDateLabel(dateKey)}</div><div class="daily-stars">${value} ⭐</div>`;
+        dailyListEl.append(item);
+      });
+    }
+
+    function isValidDateKey(value) {
+      return /^\d{8}$/.test(value);
+    }
+
+    async function clearDayStars() {
+      const input = dateInputEl.value.trim();
+      if (!isValidDateKey(input)) {
+        statusTextEl.textContent = "日期格式不对，需要 8 位数字，例如 20260331。";
+        return;
+      }
+
+      const removedStars = Number(progressState.dailyStars[input]) || 0;
+      if (!removedStars) {
+        statusTextEl.textContent = `没有找到 ${input} 的星星记录。`;
+        return;
+      }
+
+      delete progressState.dailyStars[input];
+      progressState.totalStars = Math.max(0, progressState.totalStars - removedStars);
+      await saveProgress();
+      renderStats();
+      statusTextEl.textContent = `已清除 ${input} 的 ${removedStars} 颗星星。`;
+    }
+
+    document.getElementById("clearDateBtn").addEventListener("click", clearDayStars);
+
+    async function initPage() {
+      await loadProgress();
+      renderStats();
+      document.title = "学习统计";
+      statusTextEl.textContent = "输入日期后可以清除当天星星。";
+    }
+
+    initPage();
+  </script>
+</body>
+</html>
