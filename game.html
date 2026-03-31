@@ -2,393 +2,369 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Suya's English Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Suya's Happy English</title>
   <style>
     :root {
-      --sky: #eaf8ff;
-      --peach: #fff0d9;
+      --bg: #fffaf1;
       --panel: #ffffff;
-      --ink: #304057;
-      --pink: #ff8fb1;
-      --orange: #ff9b54;
-      --yellow: #ffd65a;
-      --green: #70c98b;
-      --blue: #79c8ff;
-      --line: #ffd7b2;
-      --shadow: 0 18px 36px rgba(81, 95, 135, 0.16);
+      --ink: #2f3c52;
+      --muted: #7f8797;
+      --orange: #ffb11b;
+      --orange-deep: #f39a00;
+      --line: #f1dfc4;
+      --shadow: 0 14px 30px rgba(77, 91, 124, 0.14);
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html,
     body {
       margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(255, 219, 148, 0.45) 0, transparent 20%),
+        linear-gradient(180deg, #fffdf8 0%, var(--bg) 100%);
       font-family: "Trebuchet MS", "Segoe UI", sans-serif;
       color: var(--ink);
-      background:
-        radial-gradient(circle at 15% 15%, rgba(255, 214, 90, 0.5) 0, transparent 18%),
-        radial-gradient(circle at 85% 12%, rgba(121, 200, 255, 0.45) 0, transparent 20%),
-        radial-gradient(circle at 10% 90%, rgba(255, 143, 177, 0.35) 0, transparent 18%),
-        linear-gradient(180deg, var(--sky) 0%, #fff9ef 62%, #fff2df 100%);
-      min-height: 100vh;
+    }
+
+    body {
+      padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
     }
 
     .app {
-      width: min(1180px, calc(100vw - 24px));
+      width: min(980px, calc(100vw - 20px));
+      min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
       margin: 0 auto;
-      padding: 18px 0 32px;
+      padding: 12px 0 16px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 12px;
+    }
+
+    .topbar,
+    .card,
+    .footer-panel {
+      background: var(--panel);
+      border: 2px solid #fff;
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .topbar {
+      padding: 12px 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .progress-text {
+      font-size: 18px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+
+    .dots::-webkit-scrollbar {
+      display: none;
+    }
+
+    .dot {
+      flex: 0 0 auto;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: none;
+      background: #f4f4f4;
+      color: #8b8f99;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background: #fff8e3;
+      color: var(--orange-deep);
+      box-shadow: inset 0 0 0 2px #ffd166;
+    }
+
+    .card {
+      overflow: hidden;
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .image-wrap {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #f8f3ea;
+      aspect-ratio: 16 / 10;
+      max-height: 45dvh;
+      min-height: 230px;
+    }
+
+    .scene-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .sentence-panel {
+      text-align: center;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .sentence {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 54px);
+      line-height: 1.15;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .sentence-tip {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .playback-row {
+      min-height: 44px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .icon-button {
+      width: 68px;
+      height: 68px;
+      border-radius: 999px;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: linear-gradient(180deg, #ffc63a, var(--orange-deep));
+      box-shadow: 0 14px 22px rgba(243, 154, 0, 0.26);
+      color: #fff;
+    }
+
+    .icon-button.small {
+      width: 48px;
+      height: 48px;
+      box-shadow: 0 10px 18px rgba(243, 154, 0, 0.18);
+    }
+
+    .icon-button.hidden {
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .icon {
+      width: 30px;
+      height: 30px;
+      fill: currentColor;
+    }
+
+    .footer-panel {
+      padding: 12px 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .footer-actions {
+      display: grid;
+      grid-template-columns: 56px 1fr 56px;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nav-button {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      border: none;
+      background: #fff3da;
+      box-shadow: 0 8px 18px rgba(81, 95, 135, 0.1);
+      cursor: pointer;
+      color: var(--orange-deep);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-button .icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .status {
+      min-height: 22px;
+      text-align: center;
+      color: #5d6778;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
     }
 
     .link-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 48px;
-      padding: 10px 18px;
-      border-radius: 18px;
-      background: #fff;
-      border: 2px solid #ffe3b1;
-      color: var(--ink);
+      min-height: 44px;
+      padding: 10px 16px;
+      border-radius: 16px;
       text-decoration: none;
-      font-weight: 800;
-      box-shadow: 0 8px 18px rgba(255, 155, 84, 0.12);
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 18px;
-    }
-
-    .panel {
-      background: var(--panel);
-      border-radius: 28px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-      border: 3px solid #fff;
-    }
-
-    .stage {
-      display: grid;
-      gap: 16px;
-    }
-
-    .topbar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .progress {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .sticker {
-      min-height: 52px;
-      padding: 10px 18px;
-      border-radius: 20px;
-      background: linear-gradient(180deg, #fff6db, #ffe8a8);
-      border: 2px solid #fff;
-      box-shadow: 0 10px 20px rgba(255, 193, 68, 0.22);
-      font-size: 18px;
-      font-weight: 800;
-    }
-
-    .nav {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .big-button {
-      min-height: 58px;
-      padding: 14px 20px;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 18px;
-      font-weight: 800;
       color: var(--ink);
-      transition: transform 0.14s ease, filter 0.14s ease;
-      box-shadow: 0 10px 18px rgba(74, 84, 122, 0.12);
-    }
-
-    .big-button:hover,
-    .big-button:focus-visible {
-      transform: translateY(-2px) scale(1.01);
-      filter: brightness(1.03);
-      outline: none;
-    }
-
-    .big-button:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .btn-orange { background: linear-gradient(180deg, #ffb377, var(--orange)); color: #fff; }
-    .btn-pink { background: linear-gradient(180deg, #ffb8ce, var(--pink)); color: #fff; }
-    .btn-blue { background: linear-gradient(180deg, #a6ddff, var(--blue)); }
-    .btn-green { background: linear-gradient(180deg, #a6e4b8, var(--green)); color: #fff; }
-    .btn-yellow { background: linear-gradient(180deg, #ffe89b, var(--yellow)); }
-
-    .card {
-      overflow: hidden;
-      border-radius: 28px;
-      border: 3px dashed var(--line);
-      background: linear-gradient(180deg, #fffdf8, #fff6ea);
-      padding: 16px;
-    }
-
-    .illustration {
-      width: 100%;
-      aspect-ratio: 16 / 10;
-      object-fit: cover;
-      display: block;
-      border-radius: 24px;
-      border: 3px solid #fff;
-      background: linear-gradient(135deg, #ffe4d7, #fff2be);
-    }
-
-    .sentence-box {
-      margin-top: 14px;
-      padding: 16px;
-      border-radius: 24px;
-      background: #fff;
-      border: 2px solid #ffe3c9;
-    }
-
-    .sentence-box h2 {
-      margin: 0 0 10px;
-      font-size: 20px;
-    }
-
-    .sentence {
-      font-size: clamp(28px, 3.4vw, 40px);
-      line-height: 1.35;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .token {
-      display: inline-block;
-      margin: 0 8px 10px 0;
-      padding: 10px 14px;
-      border-radius: 18px;
-      background: #fff6d8;
-      border: 2px solid transparent;
-      user-select: none;
-      cursor: pointer;
-      transition: transform 0.14s ease, background 0.14s ease;
-    }
-
-    .token:hover,
-    .token:focus-visible {
-      transform: translateY(-2px);
-      background: #ffe9aa;
-      border-color: #ffd26f;
-      outline: none;
-    }
-
-    .control-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .record-box {
-      padding: 16px;
-      border-radius: 24px;
-      background: linear-gradient(180deg, #fff3f6, #fff9fc);
-      border: 2px solid #ffd4df;
-      display: grid;
-      gap: 12px;
-    }
-
-    .record-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .status {
-      min-height: 56px;
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: #eef9ff;
-      border: 2px solid #d7efff;
-      font-size: 16px;
-      line-height: 1.5;
-      font-weight: 700;
-    }
-
-    .score-card {
-      display: grid;
-      gap: 8px;
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: #f7fff1;
-      border: 2px solid #d7efc8;
-    }
-
-    .score-number {
-      font-size: 34px;
-      font-weight: 900;
-      color: #44a968;
-    }
-
-    .tips {
-      font-size: 14px;
-      color: #66758a;
-      line-height: 1.6;
-    }
-
-    .line-list {
-      display: grid;
-      gap: 10px;
-      max-height: 660px;
-      overflow: auto;
-      padding-right: 4px;
-    }
-
-    .line-item {
-      width: 100%;
-      text-align: left;
-      padding: 14px 16px;
-      border-radius: 20px;
-      background: #fff8ec;
-      border: 2px solid transparent;
-      cursor: pointer;
-      font: inherit;
       font-weight: 800;
-      color: var(--ink);
+      background: #fff7e6;
+      border: 2px solid #ffe2af;
     }
 
-    .line-item.active {
-      background: #fff0cf;
-      border-color: #ffca77;
+    .hidden-audio {
+      display: none;
     }
 
-    .line-item strong {
-      display: block;
-      font-size: 17px;
-      margin-bottom: 6px;
-    }
-
-    .line-item span {
-      font-size: 13px;
-      color: #6f7287;
-      font-weight: 600;
-    }
-
-    .compat-box {
-      margin-top: 14px;
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: #fff8ec;
-      border: 2px solid #ffe2b8;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    audio {
-      width: 100%;
-      height: 44px;
-    }
-
-    .footer-actions {
-      margin-top: 18px;
-      display: flex;
-      justify-content: center;
-    }
-
-    @media (max-width: 900px) {
-      .layout {
-        grid-template-columns: 1fr;
+    @media (max-width: 640px) {
+      .app {
+        width: calc(100vw - 12px);
+        padding: 8px 0 12px;
+        gap: 10px;
       }
 
-      .control-grid {
-        grid-template-columns: 1fr;
+      .topbar,
+      .card,
+      .footer-panel {
+        border-radius: 20px;
+      }
+
+      .topbar {
+        padding: 10px 12px;
+      }
+
+      .progress-text {
+        font-size: 16px;
+      }
+
+      .dot {
+        width: 32px;
+        height: 32px;
+      }
+
+      .card {
+        padding: 10px;
+      }
+
+      .image-wrap {
+        min-height: 200px;
+        max-height: 39dvh;
+      }
+
+      .sentence {
+        font-size: clamp(24px, 8vw, 36px);
+      }
+
+      .sentence-tip {
+        font-size: 13px;
+      }
+
+      .footer-panel {
+        padding: 10px 12px;
       }
     }
   </style>
 </head>
-  <body>
+<body>
   <main class="app">
-    <section class="layout">
-      <div class="panel stage">
-        <div class="topbar">
-          <div class="progress">
-            <div class="sticker" id="lineLabel">Hello, everyone!</div>
-          </div>
-          <div class="nav">
-            <button id="prevBtn" class="big-button btn-yellow" type="button">上一句</button>
-            <button id="nextBtn" class="big-button btn-yellow" type="button">下一句</button>
-            <button id="randomBtn" class="big-button btn-blue" type="button">随机一句</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <img id="sceneImage" class="illustration" alt="scene" />
-          <div class="sentence-box">
-            <h2>点句子整句朗读</h2>
-            <div id="sentence" class="sentence" role="button" tabindex="0"></div>
-          </div>
-        </div>
-
-        <div class="control-grid">
-          <button id="speakSentenceBtn" class="big-button btn-orange" type="button">朗读整句</button>
-          <button id="speakSlowBtn" class="big-button btn-pink" type="button">慢慢读</button>
-          <button id="speakWordsBtn" class="big-button btn-blue" type="button">逐词读</button>
-          <button id="markDoneBtn" class="big-button btn-green" type="button">我会了 +1 星</button>
-        </div>
-
-        <div class="record-box">
-          <div class="record-actions">
-            <button id="recordBtn" class="big-button btn-orange" type="button">开始录音跟读</button>
-            <button id="stopBtn" class="big-button btn-pink" type="button" disabled>停止录音</button>
-            <button id="playRecordBtn" class="big-button btn-blue" type="button" disabled>播放我的录音</button>
-          </div>
-          <audio id="playback" controls playsinline></audio>
-          <div id="statusText" class="status">准备好了，先点“朗读整句”，再点“开始录音跟读”。</div>
-          <div class="score-card">
-            <div class="score-number" id="scoreNumber">0 分</div>
-            <div id="scoreHint">跟读后会显示评分和鼓励提示。</div>
-            <div id="recognizedText" class="tips">识别结果会显示在这里。如果浏览器不支持语音识别，也可以录音回放。</div>
-          </div>
-        </div>
+    <section class="topbar">
+      <div class="topline">
+        <div class="progress-text" id="progressText">1/22</div>
       </div>
-
-      <aside class="panel">
-        <h2>句子选择</h2>
-        <div id="lineList" class="line-list"></div>
-        <div class="compat-box" id="compatBox">
-          Safari 提示会显示在这里。
-        </div>
-        <div class="tips" style="margin-top: 14px;">
-          内容替换：只需要修改页面脚本顶部的 <code>APP_CONFIG</code>。每句的 <code>text</code> 是句子，<code>image</code> 是图片路径。<br />
-          Safari 下如果录音无法启动，请不要直接双击本地文件，改用本地服务器方式打开。
-        </div>
-      </aside>
+      <div class="dots" id="dots"></div>
     </section>
 
-    <div class="footer-actions">
-      <a class="link-button" id="statsLink" href="./stats.html">查看统计</a>
-    </div>
+    <section class="card">
+      <div class="image-wrap">
+        <img id="sceneImage" class="scene-image" alt="scene" />
+      </div>
+
+      <div class="sentence-panel">
+        <h1 id="sentence" class="sentence" role="button" tabindex="0">Hello, everyone!</h1>
+        <p class="sentence-tip">点击英文整句朗读</p>
+        <div class="playback-row">
+          <button id="playRecordBtn" class="icon-button small hidden" type="button" aria-label="播放录音">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 10v4h4l5 4V6L7 10H3zm12.5 2A4.5 4.5 0 0 0 13 7.97v8.06A4.5 4.5 0 0 0 15.5 12zm0-9.5v2.06A7.5 7.5 0 0 1 15.5 19.44v2.06A9.5 9.5 0 0 0 15.5 2.5z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="footer-panel">
+      <div class="footer-actions">
+        <button id="prevBtn" class="nav-button" type="button" aria-label="上一句">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M15.4 5.4 9 12l6.4 6.6L14 20 6 12l8-8z" fill="currentColor"/>
+          </svg>
+        </button>
+
+        <div style="display:flex; justify-content:center;">
+          <button id="recordBtn" class="icon-button" type="button" aria-label="开始录音">
+            <svg id="recordIcon" class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a1 1 0 1 1 2 0 7 7 0 0 1-6 6.93V21h3a1 1 0 1 1 0 2H8a1 1 0 1 1 0-2h3v-2.07A7 7 0 0 1 5 12a1 1 0 1 1 2 0 5 5 0 0 0 10 0z"/>
+            </svg>
+          </button>
+        </div>
+
+        <button id="nextBtn" class="nav-button" type="button" aria-label="下一句">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m8.6 18.6 6.4-6.6-6.4-6.6L10 4l8 8-8 8z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+
+      <div id="statusText" class="status">点英文整句朗读，点话筒开始录音。</div>
+
+      <div class="footer-links">
+        <a id="statsLink" class="link-button" href="./stats.html">查看统计</a>
+      </div>
+    </section>
+
+    <audio id="playback" class="hidden-audio" controls playsinline></audio>
   </main>
 
   <script>
     const APP_CONFIG = {
-      assetVersion: "20260331-1",
+      assetVersion: "20260331-2",
       title: "Suya's Happy English",
-      subtitle: "点句子听老师读，点单词学发音，再按录音按钮跟读。这个版本额外做了 Safari 兼容处理。",
       storyLines: [
         { text: "Hello, everyone!", image: "images/hello.jpg" },
         { text: "My name is suya.", image: "images/name.jpg" },
@@ -415,6 +391,11 @@
       ]
     };
 
+    const DB_NAME = "suya-english-game";
+    const DB_VERSION = 1;
+    const STORE_NAME = "kv";
+    const STORAGE_KEY = "suya-english-game-state";
+
     function withVersion(url) {
       const separator = url.includes("?") ? "&" : "?";
       return `${url}${separator}v=${APP_CONFIG.assetVersion}`;
@@ -425,39 +406,35 @@
       image: withVersion(item.image)
     }));
 
-    const DB_NAME = "suya-english-game";
-    const DB_VERSION = 1;
-    const STORE_NAME = "kv";
-    const STORAGE_KEY = "suya-english-game-state";
-
+    let db = null;
     let currentIndex = 0;
-    let stars = 0;
-    let bestScore = 0;
     let preferredVoice = null;
     let mediaRecorder = null;
     let audioChunks = [];
     let audioUrl = "";
+    let activeStream = null;
+    let isRecording = false;
     let recognition = null;
     let transcriptResult = "";
-    let isRecording = false;
-    let activeStream = null;
-    let db = null;
+    let progressState = {
+      totalStars: 0,
+      bestScore: 0,
+      currentIndex: 0,
+      dailyStars: {}
+    };
 
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
-    const lineLabel = document.getElementById("lineLabel");
+    const progressText = document.getElementById("progressText");
+    const dots = document.getElementById("dots");
     const sceneImage = document.getElementById("sceneImage");
     const sentence = document.getElementById("sentence");
-    const statusText = document.getElementById("statusText");
-    const lineList = document.getElementById("lineList");
-    const scoreNumber = document.getElementById("scoreNumber");
-    const scoreHint = document.getElementById("scoreHint");
-    const recognizedText = document.getElementById("recognizedText");
+    const playRecordBtn = document.getElementById("playRecordBtn");
     const playback = document.getElementById("playback");
     const recordBtn = document.getElementById("recordBtn");
-    const stopBtn = document.getElementById("stopBtn");
-    const playRecordBtn = document.getElementById("playRecordBtn");
-    const compatBox = document.getElementById("compatBox");
+    const recordIcon = document.getElementById("recordIcon");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const statusText = document.getElementById("statusText");
     const statsLink = document.getElementById("statsLink");
 
     function getTodayKey() {
@@ -468,9 +445,103 @@
       return `${year}${month}${day}`;
     }
 
-    function renderHeader() {
+    function normalizeSpeechText(text, singleWord = false) {
+      const trimmed = text.trim();
+      if (singleWord && /^i$/i.test(trimmed)) {
+        return "eye";
+      }
+
+      return trimmed
+        .replace(/\bsuya\b/gi, "Suya")
+        .replace(/\bI\b/g, "eye");
+    }
+
+    function getEnglishVoice() {
+      const voices = window.speechSynthesis.getVoices();
+      return (
+        voices.find((voice) => voice.lang.toLowerCase().startsWith("en") && /samantha|zira|aria|ava|allison|female/i.test(voice.name)) ||
+        voices.find((voice) => voice.lang.toLowerCase().startsWith("en")) ||
+        null
+      );
+    }
+
+    function initVoices() {
+      if (!("speechSynthesis" in window)) return;
+      preferredVoice = getEnglishVoice();
+    }
+
+    function speak(text, singleWord = false, rate = 0.92, usePreferredVoice = true) {
+      if (!("speechSynthesis" in window)) {
+        statusText.textContent = "当前浏览器不支持朗读。";
+        return;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(normalizeSpeechText(text, singleWord));
+      utterance.lang = "en-US";
+      utterance.rate = rate;
+      utterance.pitch = isSafari ? 1 : 1.04;
+      utterance.volume = 1;
+
+      if (usePreferredVoice && preferredVoice) {
+        utterance.voice = preferredVoice;
+      }
+
+      utterance.onstart = () => {
+        statusText.textContent = "正在朗读这一句。";
+      };
+
+      utterance.onend = () => {
+        statusText.textContent = "可以点话筒录音了。";
+      };
+
+      utterance.onerror = () => {
+        if (usePreferredVoice && preferredVoice) {
+          preferredVoice = null;
+          setTimeout(() => speak(text, singleWord, rate, false), 120);
+          return;
+        }
+        statusText.textContent = "朗读失败，请再点一次。";
+      };
+
+      try {
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      } catch (error) {
+        statusText.textContent = "朗读失败，请再点一次。";
+      }
+    }
+
+    function formatRecordIcon(recording) {
+      recordIcon.innerHTML = recording
+        ? '<path d="M7 7h4v10H7zm6 0h4v10h-4z"/>'
+        : '<path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a1 1 0 1 1 2 0 7 7 0 0 1-6 6.93V21h3a1 1 0 1 1 0 2H8a1 1 0 1 1 0-2h3v-2.07A7 7 0 0 1 5 12a1 1 0 1 1 2 0 5 5 0 0 0 10 0z"/>';
+    }
+
+    function renderDots() {
+      dots.innerHTML = "";
+      storyLines.forEach((_, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `dot${index === currentIndex ? " active" : ""}`;
+        button.textContent = index + 1;
+        button.addEventListener("click", async () => {
+          currentIndex = index;
+          renderCurrentLine();
+          await saveProgress();
+        });
+        dots.append(button);
+      });
+    }
+
+    function renderCurrentLine() {
+      const current = storyLines[currentIndex];
       document.title = APP_CONFIG.title;
+      progressText.textContent = `${currentIndex + 1}/${storyLines.length}`;
+      sceneImage.src = current.image;
+      sceneImage.alt = current.text;
+      sentence.textContent = current.text;
       statsLink.href = withVersion("./stats.html");
+      renderDots();
     }
 
     function openDb() {
@@ -479,7 +550,6 @@
           resolve(null);
           return;
         }
-
         const request = window.indexedDB.open(DB_NAME, DB_VERSION);
         request.onupgradeneeded = () => {
           const database = request.result;
@@ -538,7 +608,6 @@
 
     async function loadProgress() {
       let state = null;
-
       try {
         db = await openDb();
         state = await dbGet("progress");
@@ -550,43 +619,37 @@
         state = loadLocalFallback();
       }
 
-      if (state) {
-        const dailyStars = state.dailyStars && typeof state.dailyStars === "object" ? state.dailyStars : {};
-        const migratedTotalStars = Number.isFinite(state.totalStars)
-          ? state.totalStars
-          : Number.isFinite(state.stars)
-            ? state.stars
-            : 0;
-        stars = migratedTotalStars;
-        bestScore = Number.isFinite(state.bestScore) ? state.bestScore : 0;
-        currentIndex = Number.isFinite(state.currentIndex) ? Math.max(0, Math.min(storyLines.length - 1, state.currentIndex)) : 0;
-        state.dailyStars = dailyStars;
-      }
+      const dailyStars = state && state.dailyStars && typeof state.dailyStars === "object" ? state.dailyStars : {};
+      const totalStars = state && Number.isFinite(state.totalStars)
+        ? state.totalStars
+        : state && Number.isFinite(state.stars)
+          ? state.stars
+          : 0;
+      const bestScore = state && Number.isFinite(state.bestScore) ? state.bestScore : 0;
+      const savedIndex = state && Number.isFinite(state.currentIndex) ? state.currentIndex : 0;
+
+      progressState = {
+        totalStars,
+        bestScore,
+        currentIndex: Math.max(0, Math.min(storyLines.length - 1, savedIndex)),
+        dailyStars
+      };
+
+      currentIndex = progressState.currentIndex;
     }
 
     async function saveProgress() {
-      let existingState = null;
-
-      try {
-        existingState = db ? await dbGet("progress") : loadLocalFallback();
-      } catch (error) {
-        existingState = loadLocalFallback();
-      }
-
-      const dailyStars = existingState && existingState.dailyStars && typeof existingState.dailyStars === "object"
-        ? existingState.dailyStars
-        : {};
-
+      progressState.currentIndex = currentIndex;
       const state = {
-        stars,
-        totalStars: stars,
-        bestScore,
-        currentIndex,
-        dailyStars,
+        stars: progressState.totalStars,
+        totalStars: progressState.totalStars,
+        bestScore: progressState.bestScore,
+        currentIndex: progressState.currentIndex,
+        dailyStars: progressState.dailyStars,
         savedAt: Date.now()
       };
-      saveLocalFallback(state);
 
+      saveLocalFallback(state);
       try {
         if (!db) {
           db = await openDb();
@@ -598,194 +661,28 @@
       }
     }
 
-    function updateCompatibilityTip() {
-      const tips = [];
-
-      if (isSafari) {
-        tips.push("Safari 已启用兼容模式。建议先点一次页面按钮，再使用朗读和录音。");
-      }
-
-      if (!window.isSecureContext) {
-        tips.push("当前不是安全上下文。Safari 的麦克风通常需要用 localhost 或 https 打开页面。直接打开本地文件时，录音可能失败。");
-      }
-
-      if (!(window.SpeechRecognition || window.webkitSpeechRecognition)) {
-        tips.push("当前浏览器没有可用的语音识别评分接口，仍然可以录音和回放。Safari 某些版本会出现这个情况。");
-      }
-
-      if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-        tips.push("当前浏览器不支持麦克风录音接口。请换较新的 Safari、Edge 或 Chrome。");
-      }
-
-      tips.push("学习记录会保存在当前浏览器里，刷新页面后星星和最高分会保留。详细统计在统计页查看。");
-
-      compatBox.textContent = tips.join(" ");
-    }
-
-    function getEnglishVoice() {
-      const voices = window.speechSynthesis.getVoices();
-      return (
-        voices.find((voice) => voice.lang.toLowerCase().startsWith("en") && /female|samantha|zira|aria|google us english|ava|allison/i.test(voice.name)) ||
-        voices.find((voice) => voice.lang.toLowerCase().startsWith("en")) ||
-        null
-      );
-    }
-
-    function initVoices() {
-      if (!("speechSynthesis" in window)) return;
-      preferredVoice = getEnglishVoice();
-    }
-
-    function speak(text, rate = 0.95, usePreferredVoice = true) {
-      if (!("speechSynthesis" in window)) {
-        statusText.textContent = "这个浏览器不支持朗读，建议用新版 Safari、Edge 或 Chrome。";
-        return;
-      }
-
-      const utterance = new SpeechSynthesisUtterance(text.trim());
-      utterance.lang = "en-US";
-      utterance.rate = rate;
-      utterance.pitch = isSafari ? 1 : 1.05;
-      utterance.volume = 1;
-      if (usePreferredVoice && preferredVoice) utterance.voice = preferredVoice;
-
-      utterance.onstart = () => {
-        statusText.textContent = `老师在读: ${text}`;
-      };
-
-      utterance.onend = () => {
-        statusText.textContent = "朗读完成，现在可以跟读啦。";
-      };
-
-      utterance.onerror = (event) => {
-        if (usePreferredVoice && preferredVoice) {
-          preferredVoice = null;
-          statusText.textContent = "正在切换默认语音重试。";
-          setTimeout(() => speak(text, rate, false), 120);
-          return;
-        }
-        statusText.textContent = `朗读失败: ${event.error || "unknown"}`;
-      };
-
-      try {
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(utterance);
-      } catch (error) {
-        statusText.textContent = `朗读失败: ${error.message}`;
-      }
-    }
-
-    function normalizeWords(text) {
-      return text
+    function scoreSpeech(target, spoken) {
+      const normalizeWords = (text) => text
         .toLowerCase()
         .replace(/[^a-z\s'-]/g, " ")
         .split(/\s+/)
         .filter(Boolean);
-    }
 
-    function scoreSpeech(target, spoken) {
       const targetWords = normalizeWords(target);
       const spokenWords = normalizeWords(spoken);
-      if (!targetWords.length) return { score: 0, matched: 0, total: 0 };
+      if (!targetWords.length) return 0;
 
       const remaining = [...spokenWords];
       let matched = 0;
-
       targetWords.forEach((word) => {
-        const index = remaining.indexOf(word);
-        if (index >= 0) {
+        const foundIndex = remaining.indexOf(word);
+        if (foundIndex >= 0) {
           matched += 1;
-          remaining.splice(index, 1);
+          remaining.splice(foundIndex, 1);
         }
       });
 
-      const ratio = matched / targetWords.length;
-      const score = Math.max(0, Math.min(100, Math.round(ratio * 100)));
-      return { score, matched, total: targetWords.length };
-    }
-
-    function scoreMessage(score) {
-      if (score >= 95) return "太棒了，几乎全对。";
-      if (score >= 80) return "很好，已经读得很清楚了。";
-      if (score >= 60) return "不错，再慢一点会更好。";
-      if (score >= 35) return "有进步，先听一遍再跟读一次。";
-      return "先跟着老师一句一句读，别着急。";
-    }
-
-    async function updateScore(score, transcript, matchedInfo) {
-      bestScore = Math.max(bestScore, score);
-      scoreNumber.textContent = `${score} 分`;
-      scoreHint.textContent = `${scoreMessage(score)} 匹配 ${matchedInfo.matched}/${matchedInfo.total} 个单词。`;
-      recognizedText.textContent = transcript
-        ? `识别到: ${transcript}`
-        : "这次没有识别到清晰语音，可以再试一次。";
-      renderHeader();
-      await saveProgress();
-    }
-
-    function buildTokens(text) {
-      sentence.innerHTML = "";
-      const parts = text.split(/(\s+)/);
-      parts.forEach((part) => {
-        if (!part.trim()) {
-          sentence.append(document.createTextNode(part));
-          return;
-        }
-        const token = document.createElement("span");
-        token.className = "token";
-        token.textContent = part;
-        token.tabIndex = 0;
-        token.addEventListener("click", (event) => {
-          event.stopPropagation();
-          speak(part.replace(/[.,!?]/g, ""), 0.84);
-        });
-        token.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            speak(part.replace(/[.,!?]/g, ""), 0.84);
-          }
-        });
-        sentence.append(token);
-      });
-    }
-
-    function renderLineList() {
-      lineList.innerHTML = "";
-      storyLines.forEach((item, index) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = `line-item${index === currentIndex ? " active" : ""}`;
-        button.innerHTML = `<strong>${index + 1}. ${item.text}</strong><span>点这里切换</span>`;
-        button.addEventListener("click", async () => {
-          currentIndex = index;
-          renderCurrentLine();
-          await saveProgress();
-        });
-        lineList.append(button);
-      });
-    }
-
-    function resetPracticePanel() {
-      scoreNumber.textContent = "0 分";
-      scoreHint.textContent = "跟读后会显示评分和鼓励提示。";
-      recognizedText.textContent = "识别结果会显示在这里。如果浏览器不支持语音识别，也可以录音回放。";
-      statusText.textContent = "准备好了，先点“朗读整句”，再点“开始录音跟读”。";
-    }
-
-    function renderCurrentLine() {
-      const current = storyLines[currentIndex];
-      renderHeader();
-      lineLabel.textContent = current.text;
-      sceneImage.src = current.image;
-      sceneImage.alt = current.text;
-      sceneImage.onerror = () => {
-        sceneImage.src =
-          "data:image/svg+xml;charset=UTF-8," +
-          encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 560'><rect width='900' height='560' fill='#ffe7d3'/><text x='50%' y='48%' dominant-baseline='middle' text-anchor='middle' font-size='36' font-family='Arial' fill='#8d5a44'>Replace this image</text></svg>");
-      };
-      buildTokens(current.text);
-      renderLineList();
-      resetPracticePanel();
+      return Math.round((matched / targetWords.length) * 100);
     }
 
     function initRecognition() {
@@ -796,38 +693,23 @@
       recognizer.interimResults = false;
       recognizer.maxAlternatives = 1;
       recognizer.continuous = false;
-
       recognizer.onresult = (event) => {
         transcriptResult = Array.from(event.results)
           .map((result) => result[0].transcript)
           .join(" ")
           .trim();
       };
-
-      recognizer.onerror = (event) => {
-        if (event.error !== "aborted") {
-          recognizedText.textContent = `语音识别提示: ${event.error}`;
-        }
-      };
-
       return recognizer;
     }
 
     function getRecorderOptions() {
       if (typeof MediaRecorder === "undefined") return null;
-      const candidates = [
-        "audio/mp4",
-        "audio/webm;codecs=opus",
-        "audio/webm",
-        "audio/ogg;codecs=opus"
-      ];
-
+      const candidates = ["audio/mp4", "audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus"];
       for (const mimeType of candidates) {
         if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(mimeType)) {
           return { mimeType };
         }
       }
-
       return {};
     }
 
@@ -838,21 +720,26 @@
       }
     }
 
+    async function awardStar() {
+      progressState.totalStars += 1;
+      const todayKey = getTodayKey();
+      progressState.dailyStars[todayKey] = (Number(progressState.dailyStars[todayKey]) || 0) + 1;
+      await saveProgress();
+    }
+
     async function startRecording() {
-      if (isRecording) return;
+      if (isRecording) {
+        stopRecording();
+        return;
+      }
 
       if (!window.isSecureContext) {
-        statusText.textContent = "Safari 录音通常要求用 localhost 或 https 打开页面。请不要直接双击 html 文件。";
+        statusText.textContent = "录音需要通过 GitHub Pages、localhost 或 https 打开。";
         return;
       }
 
-      if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
-        statusText.textContent = "当前浏览器不支持麦克风录音。";
-        return;
-      }
-
-      if (typeof MediaRecorder === "undefined") {
-        statusText.textContent = "当前浏览器不支持 MediaRecorder，无法录音。";
+      if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) || typeof MediaRecorder === "undefined") {
+        statusText.textContent = "当前浏览器不支持录音。";
         return;
       }
 
@@ -871,6 +758,9 @@
         audioChunks = [];
         const recorderOptions = getRecorderOptions();
         mediaRecorder = recorderOptions ? new MediaRecorder(activeStream, recorderOptions) : new MediaRecorder(activeStream);
+        isRecording = true;
+        formatRecordIcon(true);
+        statusText.textContent = "正在录音，再点一次话筒结束。";
 
         mediaRecorder.ondataavailable = (event) => {
           if (event.data && event.data.size > 0) {
@@ -884,48 +774,42 @@
           if (audioUrl) URL.revokeObjectURL(audioUrl);
           audioUrl = URL.createObjectURL(blob);
           playback.src = audioUrl;
-          playRecordBtn.disabled = false;
-          stopActiveStream();
+          playRecordBtn.classList.remove("hidden");
 
-          const target = storyLines[currentIndex].text;
-          const result = scoreSpeech(target, transcriptResult);
-          await updateScore(result.score, transcriptResult, result);
-          statusText.textContent = "录音结束，可以播放自己的声音，也可以再来一次。";
+          if (transcriptResult) {
+            progressState.bestScore = Math.max(progressState.bestScore, scoreSpeech(storyLines[currentIndex].text, transcriptResult));
+          }
+
+          await awardStar();
+          stopActiveStream();
+          statusText.textContent = "录音完成，英文下方可以播放你的录音。";
         };
 
         mediaRecorder.onerror = () => {
-          statusText.textContent = "录音过程中出现错误，请再试一次。";
+          statusText.textContent = "录音失败，请再试一次。";
           stopActiveStream();
         };
 
         mediaRecorder.start();
-        isRecording = true;
-        recordBtn.disabled = true;
-        stopBtn.disabled = false;
-        playRecordBtn.disabled = true;
-        statusText.textContent = "正在录音，请跟着当前句子读。";
-        recognizedText.textContent = recognition
-          ? "正在识别，请读得慢一点、清楚一点。"
-          : "当前浏览器不支持自动评分识别，但仍然可以录音回放。";
 
         if (recognition) {
           try {
             recognition.start();
           } catch (error) {
-            recognizedText.textContent = "语音识别没有启动成功，但录音仍可使用。";
           }
         }
       } catch (error) {
         stopActiveStream();
-        statusText.textContent = "无法打开麦克风，请允许浏览器使用麦克风。";
+        isRecording = false;
+        formatRecordIcon(false);
+        statusText.textContent = "无法打开麦克风，请检查 iPhone 浏览器权限。";
       }
     }
 
     function stopRecording() {
       if (!isRecording) return;
       isRecording = false;
-      recordBtn.disabled = false;
-      stopBtn.disabled = true;
+      formatRecordIcon(false);
 
       if (recognition) {
         try {
@@ -941,83 +825,14 @@
       }
     }
 
-    function speakWordsOneByOne() {
-      const words = storyLines[currentIndex].text
-        .split(/\s+/)
-        .map((word) => word.replace(/[.,!?]/g, ""))
-        .filter(Boolean);
-      statusText.textContent = "开始逐词朗读。";
-      words.forEach((word, index) => {
-        setTimeout(() => speak(word, 0.78), index * 1300);
-      });
+    function changeLine(step) {
+      currentIndex = (currentIndex + step + storyLines.length) % storyLines.length;
+      playRecordBtn.classList.add("hidden");
+      playback.removeAttribute("src");
+      renderCurrentLine();
+      saveProgress();
+      statusText.textContent = "点英文整句朗读，点话筒开始录音。";
     }
-
-    document.getElementById("prevBtn").addEventListener("click", async () => {
-      currentIndex = (currentIndex - 1 + storyLines.length) % storyLines.length;
-      renderCurrentLine();
-      await saveProgress();
-    });
-
-    document.getElementById("nextBtn").addEventListener("click", async () => {
-      currentIndex = (currentIndex + 1) % storyLines.length;
-      renderCurrentLine();
-      await saveProgress();
-    });
-
-    document.getElementById("randomBtn").addEventListener("click", async () => {
-      currentIndex = Math.floor(Math.random() * storyLines.length);
-      renderCurrentLine();
-      await saveProgress();
-    });
-
-    document.getElementById("speakSentenceBtn").addEventListener("click", () => {
-      speak(storyLines[currentIndex].text);
-    });
-
-    document.getElementById("speakSlowBtn").addEventListener("click", () => {
-      speak(storyLines[currentIndex].text, 0.72);
-    });
-
-    document.getElementById("speakWordsBtn").addEventListener("click", speakWordsOneByOne);
-
-      document.getElementById("markDoneBtn").addEventListener("click", async () => {
-      stars += 1;
-      let existingState = null;
-      try {
-        existingState = db ? await dbGet("progress") : loadLocalFallback();
-      } catch (error) {
-        existingState = loadLocalFallback();
-      }
-
-      const todayKey = getTodayKey();
-      const dailyStars = existingState && existingState.dailyStars && typeof existingState.dailyStars === "object"
-        ? existingState.dailyStars
-        : {};
-      dailyStars[todayKey] = (Number(dailyStars[todayKey]) || 0) + 1;
-
-      const state = {
-        stars,
-        totalStars: stars,
-        bestScore,
-        currentIndex,
-        dailyStars,
-        savedAt: Date.now()
-      };
-
-      saveLocalFallback(state);
-      try {
-        if (!db) {
-          db = await openDb();
-        }
-        if (db) {
-          await dbSet("progress", state);
-        }
-      } catch (error) {
-      }
-
-      renderHeader();
-      statusText.textContent = "获得一颗小星星。";
-    });
 
     sentence.addEventListener("click", () => speak(storyLines[currentIndex].text));
     sentence.addEventListener("keydown", (event) => {
@@ -1027,32 +842,28 @@
       }
     });
 
-    recordBtn.addEventListener("click", startRecording);
-    stopBtn.addEventListener("click", stopRecording);
     playRecordBtn.addEventListener("click", async () => {
       try {
         await playback.play();
       } catch (error) {
-        statusText.textContent = "播放录音失败，请再点一次播放按钮。";
+        statusText.textContent = "播放录音失败，请再点一次。";
       }
     });
+
+    recordBtn.addEventListener("click", startRecording);
+    prevBtn.addEventListener("click", () => changeLine(-1));
+    nextBtn.addEventListener("click", () => changeLine(1));
 
     async function initApp() {
       if ("speechSynthesis" in window) {
         initVoices();
         window.speechSynthesis.onvoiceschanged = initVoices;
         setTimeout(initVoices, 300);
-        setTimeout(initVoices, 1000);
-      } else {
-        statusText.textContent = "当前浏览器不支持朗读，建议用新版 Safari、Edge 或 Chrome。";
       }
 
       await loadProgress();
-      updateCompatibilityTip();
       renderCurrentLine();
-      statusText.textContent = stars > 0 || bestScore > 0
-        ? `欢迎回来，已保存 ${stars} 颗星星，最好分数 ${bestScore}。`
-        : "准备好了，先点“朗读整句”，再点“开始录音跟读”。";
+      formatRecordIcon(false);
     }
 
     initApp();
