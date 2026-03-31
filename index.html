@@ -380,12 +380,13 @@
     </section>
 
     <div class="footer-actions">
-      <a class="link-button" href="./stats.html">查看统计</a>
+      <a class="link-button" id="statsLink" href="./stats.html">查看统计</a>
     </div>
   </main>
 
   <script>
     const APP_CONFIG = {
+      assetVersion: "20260331-1",
       title: "Suya's Happy English",
       subtitle: "点句子听老师读，点单词学发音，再按录音按钮跟读。这个版本额外做了 Safari 兼容处理。",
       storyLines: [
@@ -414,7 +415,15 @@
       ]
     };
 
-    const storyLines = APP_CONFIG.storyLines;
+    function withVersion(url) {
+      const separator = url.includes("?") ? "&" : "?";
+      return `${url}${separator}v=${APP_CONFIG.assetVersion}`;
+    }
+
+    const storyLines = APP_CONFIG.storyLines.map((item) => ({
+      ...item,
+      image: withVersion(item.image)
+    }));
 
     const DB_NAME = "suya-english-game";
     const DB_VERSION = 1;
@@ -449,6 +458,7 @@
     const stopBtn = document.getElementById("stopBtn");
     const playRecordBtn = document.getElementById("playRecordBtn");
     const compatBox = document.getElementById("compatBox");
+    const statsLink = document.getElementById("statsLink");
 
     function getTodayKey() {
       const now = new Date();
@@ -460,6 +470,7 @@
 
     function renderHeader() {
       document.title = APP_CONFIG.title;
+      statsLink.href = withVersion("./stats.html");
     }
 
     function openDb() {

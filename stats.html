@@ -273,7 +273,7 @@
       <h1>学习统计</h1>
       <p>这里专门看星星统计，不放在学习主页面里。可以按日期看每天收获了多少颗星星，也可以清除指定日期的数据。</p>
       <div class="hero-actions">
-        <a class="link-button" href="./index.html">返回学习页</a>
+        <a class="link-button" id="backToStudyLink" href="./index.html">返回学习页</a>
       </div>
     </section>
 
@@ -333,6 +333,7 @@
   </main>
 
   <script>
+    const PAGE_VERSION = "20260331-1";
     const DB_NAME = "suya-english-game";
     const DB_VERSION = 1;
     const STORE_NAME = "kv";
@@ -356,6 +357,12 @@
     const calendarGridEl = document.getElementById("calendarGrid");
     const dateInputEl = document.getElementById("dateInput");
     const statusTextEl = document.getElementById("statusText");
+    const backToStudyLinkEl = document.getElementById("backToStudyLink");
+
+    function withVersion(url) {
+      const separator = url.includes("?") ? "&" : "?";
+      return `${url}${separator}v=${PAGE_VERSION}`;
+    }
 
     function getTodayKey() {
       const now = new Date();
@@ -593,6 +600,7 @@
       await loadProgress();
       renderStats();
       document.title = "学习统计";
+      backToStudyLinkEl.href = withVersion("./index.html");
       statusTextEl.textContent = "输入日期后可以清除当天星星。";
     }
 
