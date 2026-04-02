@@ -13,29 +13,32 @@ use for: If I have a superpower,
 name: fly.png
 use for: I want to fly.
 
-name: home.jpg
-use for: I can fly over my home.
+name: big-bear.jpg
+use for: I can fly with my big bear.
 
 name: school.jpg
 use for: I can fly over my school.
 
-name: park.jpg
-use for: I can fly over the park.
+name: sky.jpg
+use for: I can fly up to the sky.
 
 name: birds.jpg
-use for: I can fly with little birds.
+use for: I can play with little birds.
+
+name: draw-rainbow.jpg
+use for: I can draw a rainbow in the sky.
 
 name: rainbow.jpg
 use for: I can slide on the rainbow.
 
-name: high.jpg
-use for: I can fly high, high, high.
+name: higher.jpg
+use for: I can fly higher and higher.
 
 name: stars.jpg
 use for: Then I will pick little stars.
 
 name: clouds.jpg
-use for: I will touch white clouds.
+use for: I will touch soft white clouds.
 
 name: moon.jpg
 use for: I will sit on the moon
@@ -51,9 +54,6 @@ use for: It will be so much fun.
 
 name: superpower-2.jpg
 use for: If I have a superpower,
-
-name: fly-2.jpg
-use for: I want to fly.
 
 name: flying-fun.jpg
 use for: Flying is fun.
