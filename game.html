@@ -151,6 +151,33 @@
       color: var(--muted);
     }
 
+    .score-panel {
+      min-height: 64px;
+      display: grid;
+      gap: 4px;
+      align-content: center;
+      justify-items: center;
+    }
+
+    .score-badge {
+      min-width: 96px;
+      min-height: 34px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: #fff4dc;
+      color: var(--orange-deep);
+      font-size: 18px;
+      font-weight: 900;
+      box-shadow: inset 0 0 0 2px #ffe1a1;
+    }
+
+    .score-text {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      text-align: center;
+    }
+
     .playback-row {
       min-height: 44px;
       display: flex;
@@ -318,6 +345,10 @@
       <div class="sentence-panel">
         <h1 id="sentence" class="sentence" role="button" tabindex="0">Hello, everyone!</h1>
         <p class="sentence-tip">点击英文整句朗读</p>
+        <div id="scorePanel" class="score-panel">
+          <div id="scoreBadge" class="score-badge">Ready</div>
+          <div id="scoreText" class="score-text">录音后会在这里显示分数和鼓励。</div>
+        </div>
         <div class="playback-row">
           <button id="playRecordBtn" class="icon-button small hidden" type="button" aria-label="播放录音">
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -363,31 +394,26 @@
 
   <script>
     const APP_CONFIG = {
-      assetVersion: "20260402-1",
+      assetVersion: "20260403-1",
       title: "Suya's Happy English",
       storyLines: [
         { text: "Hello, everyone!", image: "images/hello.jpg" },
-        { text: "My name is suya.", image: "images/name.jpg" },
+        { text: "My name is Suya.", image: "images/name.jpg" },
         { text: "I am four years old.", image: "images/four.jpg" },
         { text: "If I have a superpower,", image: "images/superpower.jpg" },
         { text: "I want to fly.", image: "images/fly.png" },
         { text: "I can fly with my big bear.", image: "images/big-bear.jpg" },
         { text: "I can fly over my school.", image: "images/school.jpg" },
-        { text: "I can fly up to the sky.", image: "images/sky.jpg" },
         { text: "I can play with little birds.", image: "images/birds.jpg" },
-        { text: "I can draw a rainbow in the sky.", image: "images/draw-rainbow.jpg" },
-        { text: "I can slide on the rainbow.", image: "images/rainbow.jpg" },
-        { text: "I can fly higher and higher.", image: "images/higher.jpg" },
-        { text: "Then I will pick little stars.", image: "images/stars.jpg" },
-        { text: "I will touch soft white clouds.", image: "images/clouds.jpg" },
-        { text: "I will sit on the moon", image: "images/moon.jpg" },
-        { text: "and sleep in the moonlight.", image: "images/moonlight.jpg" },
-        { text: "I will laugh and laugh.", image: "images/laugh.jpg" },
-        { text: "It will be so much fun.", image: "images/fun.jpg" },
-        { text: "If I have a superpower,", image: "images/superpower-2.jpg" },
-        { text: "I want to fly.", image: "images/fly.png" },
+        { text: "I can fly in the sky.", image: "images/sky.jpg" },
+        { text: "I can sit on white clouds.", image: "images/clouds.jpg" },
+        { text: "I can draw in the sky.", image: "images/draw-sky.jpg" },
+        { text: "I can draw a rainbow.", image: "images/rainbow.jpg" },
+        { text: "I can draw little stars.", image: "images/stars.jpg" },
+        { text: "I can draw the moon.", image: "images/moon.jpg" },
         { text: "Flying is fun.", image: "images/flying-fun.jpg" },
         { text: "Flying is magic.", image: "images/magic.jpg" },
+        { text: "I am happy.", image: "images/happy.jpg" },
         { text: "Thank you!", image: "images/thankyou.jpg" }
       ]
     };
@@ -429,6 +455,8 @@
     const dots = document.getElementById("dots");
     const sceneImage = document.getElementById("sceneImage");
     const sentence = document.getElementById("sentence");
+    const scoreBadge = document.getElementById("scoreBadge");
+    const scoreText = document.getElementById("scoreText");
     const playRecordBtn = document.getElementById("playRecordBtn");
     const playback = document.getElementById("playback");
     const recordBtn = document.getElementById("recordBtn");
@@ -512,6 +540,31 @@
       }
     }
 
+    function getPraiseByScore(score) {
+      if (score >= 90) {
+        return { short: "A+", speak: "Well done!", text: "Well done! You read it very clearly." };
+      }
+      if (score >= 75) {
+        return { short: "A", speak: "Good job!", text: "Good job! That was really nice." };
+      }
+      if (score >= 55) {
+        return { short: "B", speak: "Nice try!", text: "Nice try! Let's read it one more time." };
+      }
+      return { short: "C", speak: "Keep going!", text: "Keep going! Listen once and try again." };
+    }
+
+    function resetScorePanel() {
+      scoreBadge.textContent = "Ready";
+      scoreText.textContent = "录音后会在这里显示分数和鼓励。";
+    }
+
+    function showScoreFeedback(score) {
+      const praise = getPraiseByScore(score);
+      scoreBadge.textContent = `${score}`;
+      scoreText.textContent = praise.text;
+      speak(praise.speak, false, 0.96);
+    }
+
     function formatRecordIcon(recording) {
       recordIcon.innerHTML = recording
         ? '<path d="M7 7h4v10H7zm6 0h4v10h-4z"/>'
@@ -542,6 +595,7 @@
       sceneImage.alt = current.text;
       sentence.textContent = current.text;
       statsLink.href = withVersion("./stats.html");
+      resetScorePanel();
       renderDots();
     }
 
@@ -777,13 +831,18 @@
           playback.src = audioUrl;
           playRecordBtn.classList.remove("hidden");
 
+          let currentScore = 0;
           if (transcriptResult) {
-            progressState.bestScore = Math.max(progressState.bestScore, scoreSpeech(storyLines[currentIndex].text, transcriptResult));
+            currentScore = scoreSpeech(storyLines[currentIndex].text, transcriptResult);
+            progressState.bestScore = Math.max(progressState.bestScore, currentScore);
           }
 
           await awardStar();
           stopActiveStream();
-          statusText.textContent = "录音完成，英文下方可以播放你的录音。";
+          showScoreFeedback(currentScore);
+          statusText.textContent = currentScore > 0
+            ? "录音完成，已经打分并给了鼓励语。"
+            : "录音完成，可以播放录音；当前浏览器没有识别到可评分内容。";
         };
 
         mediaRecorder.onerror = () => {
