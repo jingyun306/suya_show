@@ -1,7 +1,7 @@
-name: hello.jpg
+name: hello.png
 use for: Hello, everyone!
 
-name: name.jpg
+name: name.png
 use for: My name is Suya.
 
 name: four.jpg
